@@ -1,0 +1,10 @@
+# Ignore images folder
+images/
+images/*
+**/images/
+
+# Ignore outputs folder contents
+app/outputs/
+app/outputs/*
+**/outputs/
+outputs/
