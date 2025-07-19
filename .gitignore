@@ -52,7 +52,6 @@ outputs/
 *.tiff
 
 # Model weights (if you want to exclude them)
-*.pt
 *.pth
 *.onnx
 
