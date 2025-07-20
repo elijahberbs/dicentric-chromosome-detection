@@ -7,21 +7,28 @@ import base64
 from typing import List, Dict, Any
 from io import BytesIO
 import uuid
+from fastapi import HTTPException
 from .cnn_classifier_service import cnn_classifier_service
 
 class YOLOModelService:
     def __init__(self):
         # Load the YOLO model
-        model_path = os.path.join(os.path.dirname(__file__), '..', 'model_weights', 'yolo_model_weights.pt')
+        app_root = os.path.dirname(os.path.dirname(__file__))  # Go up from services to app directory
+        model_path = os.path.join(app_root, 'model_weights', 'yolo_model_weights.pt')
         self.yolo_model = YOLO(model_path)
         
         # Base output folders
-        self.base_output_folder = os.path.join(os.path.dirname(__file__), '..', 'outputs')
+        self.base_output_folder = os.path.join(app_root, 'outputs')
         self.ensure_output_directories()
     
     def ensure_output_directories(self):
         """Ensure output directories exist"""
-        os.makedirs(self.base_output_folder, exist_ok=True)
+        try:
+            os.makedirs(self.base_output_folder, exist_ok=True)
+            print(f"Output directory ensured: {self.base_output_folder}")
+        except Exception as e:
+            print(f"Error creating output directory {self.base_output_folder}: {e}")
+            raise
     
     def delete_directory(self, directory: str):
         """Function to delete directories if they exist"""
@@ -50,10 +57,18 @@ class YOLOModelService:
         cropped_output_folder = os.path.join(session_output, 'cropped_predictions')
         bbox_output_folder = os.path.join(session_output, 'bbox_images')
         
+        print(f"Base output folder: {self.base_output_folder}")
+        print(f"Session output folder: {session_output}")
+        
         # Clean and create directories
         self.delete_directory(session_output)
-        os.makedirs(cropped_output_folder, exist_ok=True)
-        os.makedirs(bbox_output_folder, exist_ok=True)
+        try:
+            os.makedirs(cropped_output_folder, exist_ok=True)
+            os.makedirs(bbox_output_folder, exist_ok=True)
+            print(f"Created directories: {cropped_output_folder}, {bbox_output_folder}")
+        except Exception as e:
+            print(f"Error creating session directories: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to create output directories: {e}")
         
         # Run YOLO inference
         results = self.yolo_model(image_array)

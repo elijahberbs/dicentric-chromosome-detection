@@ -10,7 +10,8 @@ class CNNClassifierService:
         """Initialize the CNN classifier service"""
         self.model = None
         self.img_size = (150, 150)
-        self.model_path = os.path.join(os.path.dirname(__file__), '..', 'model_weights', 'my_model.weights.h5')
+        app_root = os.path.dirname(os.path.dirname(__file__))  # Go up from services to app directory
+        self.model_path = os.path.join(app_root, 'model_weights', 'my_model.weights.h5')
         self._load_model()
     
     def _create_model_architecture(self):
