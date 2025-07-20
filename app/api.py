@@ -7,6 +7,7 @@ import os
 from PIL import Image
 from app.services.yolo_model_service import yolo_service
 from app.services.cnn_classifier_service import cnn_classifier_service
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
